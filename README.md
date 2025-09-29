@@ -27,3 +27,9 @@ python train_celeba.py --root ~/data/celeba --model resnet18 --epochs 10 --batch
 
 # ResNet50 (5 epochs)
 python train_celeba.py --root ~/data/celeba --model resnet50 --epochs 5 --batch_size 48 --tag e5
+
+#Generate plots
+python plot_metrics.py
+
+#Compare models
+python compare_runs.py
