@@ -6,3 +6,8 @@ __pycache__/
 data/
 runs/*/*.pt
 
+# Ignore outputs from Milestone 2
+milestone2/outputs/
+
+# Ignore datasets
+data/
