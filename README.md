@@ -47,16 +47,14 @@ python compare_runs.py
 
 -----
 
-Milestone 2 – Celebrity Detection with YOLOv8
+# Milestone 2 – Celebrity Detection with YOLOv8
 
-Step 1: Dataset Preparation
-
-Cropped celebrity faces using CelebA.
-
-Concatenated images into grid collages (train/test).
-
-Augmented data with random transformations to increase diversity.
-
+**Summary**
+- Faces organized as `celeba_images/images_<IDENTITY>/*.jpg`
+- One global identity→class map ensures the **same ID** across specs/blur/beard/bald
+- 2×2 grid collages + YOLO labels (90/10 split), trained YOLOv8(s) @1024px
+- Prediction script draws IDs **inside** boxes; val overlays show **GT (blue)** vs **Pred (green)**
+- Final weights kept in repo
 Step 2: YOLOv8 Training
 
 Custom-trained YOLOv8 to detect multiple celebrities in one image.
@@ -69,19 +67,22 @@ Used clean_grid_preds.py to remove overlaps and fix bounding box duplicates.
 
 Final predictions show clear grids with non-overlapping boxes and labels.
 
-How to run:
+**How to run**
 
-# Step 1: Generate collages
-python milestone2/scripts/make_grid_collages.py
+1) **Generate collages**
+python milestone2/scripts/make_grids.py --n 1200 --rows 2 --cols 2 --w 1024 --h 1024 \
+  --img_root celeba_images --id_map milestone2/data/id_to_class.json --out milestone2/outputs
 
 # Step 2: Train YOLOv8
-yolo task=detect mode=train model=yolov8n.pt data=data/data.yaml epochs=10 imgsz=640
+yolo detect train model=yolov8s.pt data=milestone2/data/celeb_id.yaml imgsz=1024 epochs=60 \
+  project=milestone2/runs name=yolov8s_m2_clean
 
-# Step 3: Predict on test set
-yolo task=detect mode=predict model=milestone2/yolov8n_ft/weights/best.pt source=milestone2/data/yolo/images/test save=True
+# Step 3: Predict on images (boxes + IDs)
+python milestone2/scripts/predict_ids.py /path/to/image_or_folder   # saves to milestone2/preds/
 
-# Step 4: Clean predictions (remove overlaps)
-python milestone2/scripts/clean_grid_preds.py
+
+# Step 4: Review GT vs Pred (validation set)
+python milestone2/scripts/audit_val.py   # overlays in milestone2/val_review/
 
 -------
 
